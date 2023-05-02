@@ -3,7 +3,7 @@
 *.iml
 
 # Maven
-target
+java/target
 
 # Gradle
 .gradle

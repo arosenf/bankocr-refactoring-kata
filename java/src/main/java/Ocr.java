@@ -46,32 +46,32 @@ public class Ocr {
          "    ".toCharArray()}};
 
     public static List<String> parse(String... lines) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         for (int i = 0; i < lines.length; i += 4) {
-            final char[] work = "             ".toCharArray();
+            AccountNumber accountNumber = new AccountNumber();
             for (int pos = 0; pos < 9; ++pos) {
-                work[pos] = '?';
                 boolean got1 = false;
                 for (int numeral = 0; numeral <= 9; ++numeral) {
-                    boolean ok = true;
+                    List<String> digit = new ArrayList<>();
                     for (int row = 0; row < 4; ++row) {
+                        char[] digitLine = new char[4];
                         for (int col = 0; col < 4; ++col) {
-                            if (NUMERALS[numeral][row][col] != lines[i+row].charAt(4*pos+col))
-                                ok = false;
+                            char dot = lines[i + row].charAt(4 * pos + col);
+                            digitLine[col] = dot;
                         }
+                        digit.add(new String(digitLine));
                     }
-                    if (ok) {
-                        work[pos] = (char)(numeral + (int)'0');
-                        got1 = true;
+
+                    got1 = accountNumber.parse(pos, digit.toArray(new String[0]));
+                    if (got1) {
                         break;
                     }
                 }
                 if (!got1) {
-                    work[10] = 'I';
-                    work[11] = work[12] = 'L';
+                    accountNumber.setILL();
                 }
             }
-            result.add(new String(work));
+            result.add(accountNumber.toString());
         }
         return result;
     }
